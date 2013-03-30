@@ -145,7 +145,7 @@ def best_match_for_query(code_string, elbow=10, local=False):
     code_string = code_string.encode("utf8")
     tic = int(time.time()*1000)
 
-    # First see if this is a compressed code
+    # First see if this is a compressed code, #it is a compressed code if there are thoes characters in it
     if re.match('[A-Za-z\/\+\_\-]', code_string) is not None:
         code_string = decode_code_string(code_string)
         if code_string is None:
@@ -157,7 +157,7 @@ def best_match_for_query(code_string, elbow=10, local=False):
         return Response(Response.NOT_ENOUGH_CODE, tic=tic)
 
     code_string = cut_code_string_length(code_string)
-    code_len = len(code_string.split(" ")) / 2
+    code_len = len(code_string.split(" ")) / 2  #it's the (code, timestamp) pair's count
 
     # Query the FP flat directly.
     response = query_fp(code_string, rows=30, local=local, get_data=True)

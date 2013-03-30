@@ -7,7 +7,10 @@ Created by Brian Whitman on 2010-06-16.
 Copyright (c) 2010 The Echo Nest Corporation. All rights reserved.
 """
 from __future__ import with_statement
-
+import sys, os
+abspath = os.path.dirname('/usr/lib/python2.6/site-packages/web.py-0.37-py2.6.egg')
+sys.path.append(abspath)
+os.chdir(abspath)
 import web
 import fp
 import re
@@ -40,7 +43,7 @@ class ingest:
         # First see if this is a compressed code
         if re.match('[A-Za-z\/\+\_\-]', params.fp_code) is not None:
            code_string = fp.decode_code_string(params.fp_code)
-           if code_string is None:
+#           if code_string is None:
                return json.dumps({"track_id":track_id, "ok":False, "error":"cannot decode code string %s" % params.fp_code})
         else:
             code_string = params.fp_code
