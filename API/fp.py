@@ -481,7 +481,7 @@ def erase_database(really_delete=False, local=False):
     tyrant = get_tyrant()
     tyrant.multi_del(tyrant.keys())
 
-def chunker(seq, size):
+def chunker(seq, size): # Convert a sequence into a chunke list, each chunke's size is size
     return [tuple(seq[pos:pos + size]) for pos in xrange(0, len(seq), size)]
 
 def split_codes(fp):
@@ -490,14 +490,14 @@ def split_codes(fp):
         track id, return track ids of the form trid-0, trid-1, trid-2, etc. """
 
     # Convert seconds into time units
-    segmentlength = 60 * 1000.0 / 23.2
-    halfsegment = segmentlength / 2.0
+    segmentlength = 60 * 1000.0 / 23.2  # Every segment's length is about 30 seconds, this is the size of each segment
+    halfsegment = segmentlength / 2.0   # This is the pairs' count of each segment, pair(code, timestamp)
     
     trid = fp["track_id"]
     codestring = fp["fp"]
 
     codes = codestring.split()
-    pairs = chunker(codes, 2)
+    pairs = chunker(codes, 2)   # Get a chunke list, each item is a tuple like (code, timestamp)
     pairs = [(int(x[1]), " ".join(x)) for x in pairs]
 
     pairs.sort()
