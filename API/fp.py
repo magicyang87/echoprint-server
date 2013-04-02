@@ -498,22 +498,22 @@ def split_codes(fp):
 
     codes = codestring.split()
     pairs = chunker(codes, 2)   # Get a chunke list, each item is a tuple like (code, timestamp)
-    pairs = [(int(x[1]), " ".join(x)) for x in pairs]
+    pairs = [(int(x[1]), " ".join(x)) for x in pairs]   # Wrap the above list with (timestamp, (code, timestamp)
 
-    pairs.sort()
+    pairs.sort()    # sort by timestamp
     size = len(pairs)
 
     if len(pairs):
-        lasttime = pairs[-1][0]
-        numsegs = int(lasttime / halfsegment) + 1
+        lasttime = pairs[-1][0] # Last timestamp, notice: -n means the last nth element
+        numsegs = int(lasttime / halfsegment) + 1 # 
     else:
         numsegs = 0
 
     ret = []
     sindex = 0
     for i in range(numsegs):
-        s = i * halfsegment
-        e = i * halfsegment + segmentlength
+        s = i * halfsegment # Get a segment's start pos
+        e = i * halfsegment + segmentlength # Get a segment's end pos
         #print i, s, e
         
         while sindex < size and pairs[sindex][0] < s:
