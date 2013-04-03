@@ -411,24 +411,24 @@ def local_query_fp(code_string,rows=10,get_data=False):
     keys = code_string.split(" ")[0::2]
     track_hist = []
     unique_keys = []
-    for k in keys:
+    for k in keys:  # Get all tracks in which key appeards, a key is calculated only once
         if k not in unique_keys:
             track_hist += _fake_solr["index"].get(k, [])
             unique_keys += [k]
-    top_matches = defaultdict(int)
+    top_matches = defaultdict(int)  # Notice: it's different from dictionary
     for track in track_hist:
         top_matches[track] += 1
-    if not get_data:
+    if not get_data:    # 
         # Make a list of lists that have track_id, score
         return FakeSolrResponse(sorted(top_matches.iteritems(), key=lambda (k,v): (v,k), reverse=True)[0:rows])
     else:
         # Make a list of lists that have track_id, score, then fp
-        lol = sorted(top_matches.iteritems(), key=lambda (k,v): (v,k), reverse=True)[0:rows]
-        lol = map(list, lol)
+        lol = sorted(top_matches.iteritems(), key=lambda (k,v): (v,k), reverse=True)[0:rows]    # Sort by value not by key
+        lol = map(list, lol)    # Convert to a list from sorted results
         
         for x in lol:
-            trackid = x[0].split("-")[0]
-            x.append(_fake_solr["store"][x[0]])
+            trackid = x[0].split("-")[0]    # Get real track id, exclude the sub-segment id
+            x.append(_fake_solr["store"][x[0]]) # Append 
             x.append(_fake_solr["metadata"][x[0]])
         return FakeSolrResponse(lol)
 
@@ -519,7 +519,7 @@ def split_codes(fp):
         while sindex < size and pairs[sindex][0] < s:
             #print "s", sindex, l[sindex]
             sindex+=1
-        eindex = sindex
+        eindex = sindex 
         while eindex < size and pairs[eindex][0] < e:
             #print "e",eindex,l[eindex]
             eindex+=1
