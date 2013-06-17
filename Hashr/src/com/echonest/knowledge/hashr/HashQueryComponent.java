@@ -78,7 +78,7 @@ public class HashQueryComponent extends SearchComponent {
         //
         // Get the terms and offsets.
         String[] terms = new String[half];
-        int[] offsets = new int[half];
+        int[] offsets = new int[half];  // offsets is useless, can be removed
         for(int i = 0, j = 0; i < qs.length; i += 2, j++) {
             terms[j] = qs[i];
             try {
@@ -94,8 +94,8 @@ public class HashQueryComponent extends SearchComponent {
         //
         // Run the search.
         SolrIndexSearcher searcher = req.getSearcher();
-        DocList dl = eval(searcher.getIndexReader(), terms, rb, rows, start);
-        SolrIndexSearcher.QueryResult qr = new SolrIndexSearcher.QueryResult();
+        DocList dl = eval(searcher.getIndexReader(), terms, rb, rows, start);   // query doc list by terms, by eval
+        SolrIndexSearcher.QueryResult qr = new SolrIndexSearcher.QueryResult(); // do searching
         qr.setDocList(dl);
         rb.setResult(qr);
         rsp.add("response", rb.getResults().docList);
@@ -171,7 +171,7 @@ public class HashQueryComponent extends SearchComponent {
 
         //
         // Uniquify the query terms before processing to avoid multiple counts.
-        termSet.addAll(Arrays.asList(queryTerms));
+        termSet.addAll(Arrays.asList(queryTerms));  // if not by set, it maybe more accurate
         
         int[] docs = new int[32];
         int[] freqs = new int[32];
@@ -181,14 +181,14 @@ public class HashQueryComponent extends SearchComponent {
         for(IndexReader sub : reader.getSequentialSubReaders()) {
             int p = 0;
             for(String t : termSet) {
-                TermDocs td = sub.termDocs(new Term("fp", t));
+                TermDocs td = sub.termDocs(new Term("fp", t));  // get all docs by term t
                 int pos = td.read(docs, freqs);
                 while(pos != 0) {
                     for(int i = 0; i < pos; i++) {
                         if(p >= alld.length) {
-                            alld = Arrays.copyOf(alld, alld.length * 2);
+                            alld = Arrays.copyOf(alld, alld.length * 2);    // buffer is too small, increases by 2 times
                         }
-                        alld[p++] = docs[i];
+                        alld[p++] = docs[i];    // this loop can be optimized as a copy statement
                     }
                     pos = td.read(docs, freqs);
                 }
@@ -198,7 +198,7 @@ public class HashQueryComponent extends SearchComponent {
             //
             // We only need to process this sub if we got some hits.
             if(p > 0) {
-                Arrays.sort(alld, 0, p);
+                Arrays.sort(alld, 0, p);    // sort and then calculate every doc's appearant count
                 int curr = alld[0];
                 int count = 0;
                 for(int i = 0; i < p; i++) {
